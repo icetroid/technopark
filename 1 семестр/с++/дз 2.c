@@ -3,7 +3,10 @@
 #include <string.h>
 
 #define INITIAL_EXP_LENGTH 64
-#define INITIAL_RES_LENGTH 10
+#define INITIAL_NUMBERS_LENGTH 10
+#define INITIAL_NUMBER_LENGTH 10
+
+#define _CRT_SECURE_NO_WARNINGS
 
 typedef enum
 {
@@ -191,32 +194,214 @@ char* toPostfix(char* exp, int expLen)
 	return postfix;
 }
 
-char* evalPostfix(char* postfix)
+int getDigit(char digit)
 {
-	/*
+	return digit - '0';
+}
+
+char toChar(int digit)
+{
+	return '0' + digit;
+}
+
+char* sum(char *firstOperand, int firstOperandLen, char *secondOperand, int secondOperandLen)
+{
 	char* res = NULL;
-	if (!(res = (char*)malloc(INITIAL_RES_LENGTH * sizeof(char))))
+	int maxLen = 0;
+	int minLen = 0;
+	char *maxOperand = NULL;
+	char *minOperand = NULL;
+	if (firstOperandLen > secondOperandLen)
+	{
+		maxLen = firstOperandLen;
+		maxOperand = firstOperand;
+		minOperand = secondOperand;
+		minLen = secondOperandLen;
+	}
+	else
+	{
+		maxLen = secondOperandLen;
+		minOperand = firstOperand;
+		maxOperand = secondOperand;
+		minLen = firstOperandLen;
+	}
+
+	if (!(res = (char*)malloc((maxLen + 2) * sizeof(char))))
 	{
 		return NULL;
 	}
-	int resIndex = 0;
-	for (int i = 0; postfix[i] != '\0'; i++)
+	int remain = 0;
+	for (int i = 0; i < minLen; i++)
 	{
-		if (isDigit(postfix[i]))
+		int addition = getDigit(firstOperand[i]) + getDigit(secondOperand[i]) + remain;
+		if (addition > 9)
 		{
-			res[operandsIndex++] = postfix[i];
+			remain = 1;
+			addition -= 10;
 		}
 		else
 		{
-			rcalculate(res[--operandsIndex], res[--operandsIndex], postfix[i]);
+			remain = 0;
+		}
+		res[i] = toChar(addition);
+	}
+	for (int i = minLen; i < maxLen; i++)
+	{
+		int addition = getDigit(maxOperand[i]) + remain;
+		if (addition > 9)
+		{
+			remain = 1;
+			addition -= 10;
+		}
+		else
+		{
+			remain = 0;
+		}
+		res[i] = toChar(addition);
+	}
+	if (remain)
+	{
+		res[maxLen++] = '1';
+	}
+	res[maxLen] = '\0';
+	return res;
+}
+
+char* minus(char *firstOperand, int firstOperandLen, char *secondOperand, int secondOperandLen)
+{
+	return NULL;
+}
+
+char* mult(char *firstOperand, int firstOperandLen, char *secondOperand, int secondOperandLen)
+{
+	return NULL;
+}
+char* div(char *firstOperand, int firstOperandLen, char *secondOperand, int secondOperandLen)
+{
+	return NULL;
+}
+
+int calcLastTwoOperands(char **operandsIndex, int currentOperandIndex, char sign)
+{
+	char *firstOperand = operandsIndex[currentOperandIndex - 1];
+	char *secondOperand = operandsIndex[currentOperandIndex];
+	int firstOperandLen = strlen(firstOperand);
+	int secondOperandLen = strlen(secondOperand);
+	
+	char *result = NULL;
+	char *(*eval)(char *, int, char *, int);
+	switch (sign)
+	{
+	case PLUS:
+		eval = sum;
+		break;
+	case MINUS:
+		eval = minus;
+		break;
+	case MULT:
+		eval = mult;
+	case DIV:
+		eval = div;
+		break;
+	default:
+		return 0;
+	}
+	result = eval(firstOperand, firstOperandLen, secondOperand, secondOperandLen);
+	
+	if (!result)
+	{
+		return 0;
+	}
+
+	free(operandsIndex[currentOperandIndex]);
+	free(operandsIndex[currentOperandIndex - 1]);
+	operandsIndex[currentOperandIndex - 1] = result;
+
+	return 1;
+
+}
+
+char* evalPostfix(char *postfix)
+{
+	char **operandsIndex = NULL;
+	int currentOperandIndex = 0;
+	if (!(operandsIndex = (char**)malloc(INITIAL_NUMBERS_LENGTH * sizeof(char*))))
+	{
+		return NULL;
+	}
+	if (!(operandsIndex[0] = (char*)malloc(INITIAL_NUMBER_LENGTH * sizeof(char))))
+	{
+		return NULL;
+	}
+
+	int operandLen = 0;
+	int maxOperandLen = INITIAL_NUMBER_LENGTH;
+	for (int i = 0; postfix[i] != '\0'; i++)
+	{
+		if (postfix[i] == '|')
+		{
+			
+			operandsIndex[currentOperandIndex][operandLen] = '\0';
+			currentOperandIndex++;
+			if (!(operandsIndex[currentOperandIndex] = (char*)malloc(INITIAL_NUMBER_LENGTH * sizeof(char))))
+			{
+				return NULL;
+			}
+			maxOperandLen = INITIAL_NUMBER_LENGTH;
+			operandLen = 0;
+			
+		}
+		else if (isDigit(postfix[i]))
+		{
+			
+			operandsIndex[currentOperandIndex][operandLen++] = postfix[i];
+			if (operandLen == maxOperandLen)
+			{
+				if (!(operandsIndex[currentOperandIndex] = (char*)realloc(operandsIndex[currentOperandIndex], maxOperandLen * 2 * sizeof(char))))
+				{
+					return NULL;
+				}
+				maxOperandLen *= 2;
+			}
+			operandsIndex[currentOperandIndex][operandLen + 1] = '\0';
+
+		}
+		else if (postfix[i] == MINUS || postfix[i] == PLUS || postfix[i] == MULT || postfix[i] == DIV)
+		{
+			int currentIndex = 0;
+			if (currentOperandIndex == 1)
+			{
+				currentIndex = currentOperandIndex;
+			}
+			else
+			{
+				currentIndex = currentOperandIndex - 1;
+			}
+			if (!calcLastTwoOperands(operandsIndex, currentIndex, postfix[i]))
+			{
+				return NULL;
+			}
+			currentOperandIndex--;
+
 		}
 	}
 
-
+	
+	
+	/*
+	char *res = NULL;
+	if (!(res = (char*)malloc((strlen(operandsIndex[0]) + 1) * sizeof(char))))
+	{
+		return NULL;
+	}
+	strncpy(res, operandsIndex[0], strlen(operandsIndex[0]));
+	printf(" j ");
+	free(operandsIndex[0]);
 	return res;
 	*/
-	return NULL;
+	return operandsIndex[0];
 }
+
 
 char* eval(char *exp, int expLen)
 {
@@ -225,7 +410,7 @@ char* eval(char *exp, int expLen)
 	{
 		return NULL;
 	}
-	printf("%s", postfix);
+	
 	char* res = evalPostfix(postfix);
 
 	return res;
@@ -266,7 +451,7 @@ int main()
 			}
 			maxExpLen *= 2;
 		}
-		printf("%c",symbol);
+		
 	}
 
 	if (!isExpCorrect(exp, expLen))
@@ -274,13 +459,15 @@ int main()
 		printError();
 		return 0;
 	}
-
+	
 	char *res = eval(exp, expLen);
+	
 	if (!res)
 	{
 		printError();
 		return 0;
 	}
+	printf("result = %s end", res);
 	//printf("%s", exp);
 	/*
 	for (int i = 0; i < expLen; i++)
