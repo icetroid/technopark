@@ -3,6 +3,7 @@
 */
 #include <iostream>
 #include <assert.h>
+
 using namespace std;
 
 #define INITIAL_SIZE 8
@@ -52,6 +53,7 @@ void Deque::increaseSize()
 	}
 
 	delete[] buffer;
+
 	buffer = newBuffer;
 	head = 0;
 	tail = size;
@@ -144,7 +146,7 @@ int main()
 {
 	int n = 0;
 	cin >> n;
-	assert(n > 0);
+	assert(n >= 0);
 	Deque deque;
 	bool result = true;
 
