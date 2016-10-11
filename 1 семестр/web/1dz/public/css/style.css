@@ -1,0 +1,119 @@
+
+.logo
+{
+	border: 5px solid gray;
+	margin: 10px;
+}
+
+.header-center
+{
+	margin-top: 34px;
+	
+}
+
+.content
+{
+	padding-left: 20px;
+}
+
+.question
+{
+	border-bottom: 1px solid gray;
+	width: 700px;
+	margin-left: 20px;
+	padding-bottom: 10px;
+	margin-bottom: 40px;
+}
+
+.new-question
+{
+	margin: 10px 20px;
+}
+
+
+.title
+{
+	font-size: 30px;
+	color: blue;
+}
+
+.answer-area
+{
+	margin-left: 20px;
+	margin-bottom: 20px;
+}
+
+.answer
+{
+	border-bottom: 1px solid orange;
+	border-top: 1px solid orange;
+	width: 700px;
+	margin-left: 20px;
+	padding-bottom: 10px;
+	margin-bottom: 40px;
+	padding-top: 10px;
+}
+
+.paging
+{
+	padding-left: 50px;
+}
+
+.like
+{
+	width: 30px;
+	margin-left: 15px;
+	margin-top: 10px;
+}
+
+.rating
+{
+	padding: 40px;
+	color: green;
+	font-weight: bold;
+}
+.avatar
+{
+	margin: 10px;
+}
+
+
+
+.question-name
+{
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.question-name a:hover
+{
+	color: green;
+}
+
+.answers
+{
+	padding: 10px;
+}
+
+.tags a
+{
+	padding-left: 5px;
+}
+.userblock
+{
+	width: 300px;
+	margin: 10px;
+}
+
+.nice-tag
+{
+	font-size: 25px;
+	color: blue;
+	
+}
+
+.block
+{
+	padding: 10px;
+}
+
