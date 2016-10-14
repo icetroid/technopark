@@ -14,7 +14,7 @@ struct Node
 	int Width;
 	int Height;
 	Node *Next;
-	Node::Node(int width, int height) : Width(width), Height(height){}
+	Node(int width, int height) : Width(width), Height(height){}
 };
 
 class Stack

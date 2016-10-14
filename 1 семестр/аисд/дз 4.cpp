@@ -1,8 +1,9 @@
-﻿/*
+/*
 ​Реализовать дек с динамическим зацикленным буфером.
 */
 #include <iostream>
 #include <assert.h>
+#include <string.h>
 
 using namespace std;
 
@@ -77,7 +78,7 @@ void Deque::decreaseSize()
 	delete[] buffer;
 	buffer = newBuffer;
 	head = 0;
-	tail = size / 4;
+	tail = length;
 	size /= 2;
 }
 
@@ -171,8 +172,7 @@ int main()
 			deque.PushBack(number);
 			break;
 		case 4:
-			number = deque.PopBack();
-			if (number != deque.PopFront())
+			if (number != deque.PopBack())
 			{
 				result = false;
 			}

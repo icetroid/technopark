@@ -16,7 +16,7 @@ int binarySearchAscend(int* arr, int size, int key)
 {
 	assert(size >= 0);
 	int index = 0;
-	while (index < size && arr[index] < key)
+	while (index < size)
 	{
 		if (arr[index] >= key)
 		{
@@ -30,11 +30,11 @@ int binarySearchAscend(int* arr, int size, int key)
 int binarySearch(int* arr, int left, int right, int key)
 {
 	assert(left >= 0);
-	assert(right >= left);
+	assert(left <= right);
 
-	int mid = (left + right) / 2;
 	while (left <= right)
 	{
+		int mid = (left + right) / 2;
 		if (key < arr[mid])
 		{
 			right = mid - 1;
@@ -47,9 +47,9 @@ int binarySearch(int* arr, int left, int right, int key)
 		{
 			return mid;
 		}
-		mid = (left + right) / 2;
 	}
 	return -1;
+
 }
 
 int findIntersection(int* A, int n, int* B, int m, int* intersection)
@@ -57,9 +57,12 @@ int findIntersection(int* A, int n, int* B, int m, int* intersection)
 	assert(n >= 0);
 	assert(m >= 0);
 
+	//текущий индекс в массиве А
 	int currentIndexA = 0;
+	//текущий индекс в массиве intersection
 	int currentIndexIntersection = 0;
-	int indexLastElementB = -1;
+
+	// последний элемент массива B находится между left и right
 	int left = 0;
 	int right = 0;
 	
@@ -67,7 +70,7 @@ int findIntersection(int* A, int n, int* B, int m, int* intersection)
 
 	if (approxIndexLastElementB == -1)
 	{
-		right = n;
+		right = n - 1;
 	}
 	else
 	{
@@ -75,14 +78,19 @@ int findIntersection(int* A, int n, int* B, int m, int* intersection)
 		right = approxIndexLastElementB;
 	}
 
+	//индекс последнего элемента массива B
 	int k = binarySearch(A, left, right, B[m - 1]);
-	k = (k == -1) ? (n - 1) : k;
 
-	for (int i = 0; i < m; i++)
+	for (int i = 0; i < m - 1; i++)
 	{
-		while (A[currentIndexA] < B[i] && currentIndexA < k)
+		while (A[currentIndexA] < B[i])
 		{
 			currentIndexA++;
+		}
+
+		if (k != -1 && currentIndexA >= k)
+		{
+			break;
 		}
 
 		if (A[currentIndexA] == B[i])
@@ -90,6 +98,12 @@ int findIntersection(int* A, int n, int* B, int m, int* intersection)
 			intersection[currentIndexIntersection++] = B[i];
 			currentIndexA++;
 		}
+	}
+
+	if (k != -1)
+	{
+		//в массиве А есть элемент, равный последнему элемент массива В
+		intersection[currentIndexIntersection++] = B[m - 1];
 	}
 
 	return currentIndexIntersection;
